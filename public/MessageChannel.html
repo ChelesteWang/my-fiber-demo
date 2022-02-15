@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let channel = new MessageChannel();
+        let port1 = channel.port1;
+        let port2 = channel.port2;
+        port1.onmessage = function(e){
+            console.log("port1接收到数据：",e.data);
+        }
+        port2.onmessage = function(e){
+            console.log("port2接收到数据：",e.data);
+        }
+        port1.postMessage("port1数据");
+        port2.postMessage("port2数据");
+    </script>
+    
+</body>
+</html>

@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Document
+</title>
 </head>
 <body>
     <script>
@@ -20,7 +21,30 @@
         //     window.requestAnimationFrame(start);
         // }
         // window.requestAnimationFrame(start);
-        
+        let activeTimeFrame = 1000/60;
+        let deadFrameTime;
+        let pendingCallback;
+        let channel = new MessageChannel();
+        let timeRemaining = ()=>deadFrameTime - performance.now();
+        channel.port2.onmessage = function(){
+            console.log("接收到port1 返回的消息");
+            let currentTime = performance.now();
+            let didTimeOut = deadFrameTime <= currentTime;
+            if(didTimeOut||timeRemaining()>0){
+                if(pendingCallback){
+                    pendingCallback({didTimeOut,timeRemaining})
+                }
+            }
+        }
+        window.requestIdleCallback = function(callback,option){
+            window.requestAnimationFrame((rafTime)=>{
+                console.log(rafTime);
+                // 后面计算是否超时使用的
+                deadFrameTime = rafTime + activeTimeFrame;
+                pendingCallback = callback;
+                channel.port1.postMessage("hello");
+            })
+        }
         let works = [
             ()=>{
                 console.log("任务1")
